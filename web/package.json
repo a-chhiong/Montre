@@ -23,6 +23,7 @@
     "@types/node": "^20.12.7",
     "@types/prismjs": "^1.26.4",
     "happy-dom": "^20.11.10",
+    "terser": "^5.51.2",
     "typescript": "^5.4.5",
     "vite": "^5.2.11",
     "vitest": "^1.6.0"
