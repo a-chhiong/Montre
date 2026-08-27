@@ -8,8 +8,8 @@ import { SwitchThemeUseCase } from '../../domain/use-cases/switch-theme';
 
 // Polyfill DOMPurify for Mermaid 10.x in ESM Vite environments
 if (typeof window !== 'undefined') {
-  const sanitizeFn = (DOMPurify as any).sanitize || (DOMPurify as any).default?.sanitize || DOMPurify;
-  (window as any).DOMPurify = typeof sanitizeFn === 'function' ? { sanitize: sanitizeFn } : DOMPurify;
+  const purify = (DOMPurify as any).default || DOMPurify;
+  (window as any).DOMPurify = purify;
 }
 
 // Global LRU Cache for rendered SVG strings: `${type}_${theme}_${codeHash}` -> SVG string
@@ -118,12 +118,14 @@ export class DiagramRenderController implements ReactiveController {
         try {
           const { svg, bindFunctions } = await mermaid.render(tempId, rawCode);
 
-          svgRenderCache.set(cacheKey, svg);
-          targetEl.innerHTML = svg;
-          canvas.style.cursor = 'zoom-in';
+          if (svg && svg.trim()) {
+            svgRenderCache.set(cacheKey, svg);
+            targetEl.innerHTML = svg;
+            canvas.style.cursor = 'zoom-in';
 
-          if (typeof bindFunctions === 'function') {
-            bindFunctions(targetEl);
+            if (typeof bindFunctions === 'function') {
+              bindFunctions(targetEl);
+            }
           }
         } catch (err) {
           console.error('[Montre] Mermaid Async Render Error:', err);

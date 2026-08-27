@@ -24,6 +24,7 @@ export class SwitchThemeUseCase {
         secondaryColor: '#1e293b',
         tertiaryColor: '#0f172a',
         fontFamily: "'JetBrains Mono', 'Inter', sans-serif",
+        fontSize: '15px',
       };
     }
     return {
@@ -36,6 +37,7 @@ export class SwitchThemeUseCase {
       secondaryColor: '#e2e8f0',
       tertiaryColor: '#f8fafc',
       fontFamily: "'JetBrains Mono', 'Inter', sans-serif",
+      fontSize: '15px',
     };
   }
 }

@@ -158,7 +158,11 @@ export function isolateDiagrams(markdown: string, slideIndex: number): {
     const targetId = `montre-${type}-s${slideIndex}-${counter}`;
 
     const encoded = encodeURIComponent(trimmedCode);
-    return `\n<div class="${canvasClass}"><script type="text/${type}" class="${srcClass}" data-code="${encoded}">${trimmedCode}</script><div class="${targetClass}" id="${targetId}"></div></div>\n`;
+    // IMPORTANT: Do NOT include raw code in the <script> body.
+    // Indented Mermaid/PlantUML lines (4+ spaces) cause marked to interpret
+    // them as nested code blocks, breaking the closing </script> and </div> tags.
+    // The data-code attribute holds the encoded source for extractCleanDiagramCode().
+    return `\n<div class="${canvasClass}"><script type="text/${type}" class="${srcClass}" data-code="${encoded}"><\/script><div class="${targetClass}" id="${targetId}"></div></div>\n`;
   });
 
   return { processedMarkdown, hasMermaid, hasPlantUML };

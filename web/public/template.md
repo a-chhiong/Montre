@@ -47,7 +47,7 @@ flowchart TB
     subgraph Data ["💾 3. Data & Infrastructure Layer (Adapters & Multi-Source)"]
         direction LR
         Repo["ISlideRepository Facade<br/>Unified Slide Loader Contract"]
-        Sources["Multi-Source Adapters<br/>• File Picker (0ms)  |  • Drag & Drop<br/>• Remote URL (?url=)  |  • Local Cache"]
+        Sources["Multi-Source Adapters<br/>• File Picker (0ms)<br/>• Drag & Drop<br/>• Remote URL (?url=)<br/>• Local Cache"]
         
         Repo <--> Sources
     end
@@ -55,9 +55,9 @@ flowchart TB
     Stores ==> UseCases
     UseCases ==> Repo
 
-    classDef ui fill:#0284c718,stroke:#0284c7,stroke-width:2px,rx:8px;
-    classDef domain fill:#05966918,stroke:#059669,stroke-width:2px,rx:8px;
-    classDef data fill:#8b5cf618,stroke:#8b5cf6,stroke-width:2px,rx:8px;
+    classDef ui fill:#0284c722,stroke:#0284c7,stroke-width:2px;
+    classDef domain fill:#05966922,stroke:#059669,stroke-width:2px;
+    classDef data fill:#8b5cf622,stroke:#8b5cf6,stroke-width:2px;
 
     class App,Stage,Lightbox,Controllers,Stores ui;
     class UseCases,Models domain;
@@ -151,9 +151,9 @@ flowchart LR
     Z2["115% 會議室投影<br/>中型會議室投影機<br/>(強化易讀性與字級)"]
     Z3["130% 階梯大禮堂<br/>4K 巨幕 / 遠距觀眾<br/>(極致對比與高張力)"]
 
-    Z1 -->|"按 Z 鍵"| Z2
-    Z2 -->|"按 Z 鍵"| Z3
-    Z3 -->|"按 Z 鍵"| Z1
+    Z1 -->|按 Z 鍵| Z2
+    Z2 -->|按 Z 鍵| Z3
+    Z3 -->|按 Z 鍵| Z1
 ```
 
 ### 縮放技術核心亮點

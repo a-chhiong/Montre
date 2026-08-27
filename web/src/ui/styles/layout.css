@@ -272,19 +272,18 @@ tr:nth-child(even) td {
 
 /* Crisp Mermaid Font & Stroke Enhancements */
 .mermaid-target svg text {
-  font-size: calc(17px * var(--zoom-factor)) !important;
   font-family: 'Inter', 'Noto Sans TC', sans-serif !important;
-  font-weight: 700 !important;
+  font-weight: 600 !important;
 }
 
 .mermaid-target svg path.flowchart-link {
-  stroke-width: 2.5px !important;
+  stroke-width: 2.2px !important;
 }
 
 .mermaid-target svg .node rect,
 .mermaid-target svg .node polygon,
 .mermaid-target svg .node circle {
-  stroke-width: 2.2px !important;
+  stroke-width: 2px !important;
 }
 
 /* ============================================================

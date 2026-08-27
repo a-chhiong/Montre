@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { parseDeck, parseDirectives, transformGithubAlerts, isolateDiagrams } from '../../src/domain/use-cases/parse-deck';
+import mermaid from 'mermaid';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -95,24 +96,29 @@ Welcome
     }
   });
 
-  it('should parse benchmark FRONTEND_SLIDES.md into all slides with all diagrams isolated', () => {
-    const benchmarkPath = path.resolve(__dirname, '../../../../.agents/FRONTEND_SLIDES.md');
-    if (fs.existsSync(benchmarkPath)) {
-      const benchmarkSource = fs.readFileSync(benchmarkPath, 'utf-8');
-      const deck = parseDeck(benchmarkSource);
-      expect(deck.totalSlides).toBeGreaterThanOrEqual(10);
+  it('should validate all mermaid blocks in template.md against mermaid.parse', async () => {
+    const { Window } = await import('happy-dom');
+    const win = new Window();
+    (globalThis as any).window = win;
+    (globalThis as any).document = win.document;
+    const rawDOMPurify = await import('dompurify');
+    const purifyFactory = (rawDOMPurify as any).default || rawDOMPurify;
+    const purifyInstance = purifyFactory(win);
+    Object.assign(purifyFactory, purifyInstance);
+    (globalThis as any).DOMPurify = purifyInstance;
 
-      // Check that slides with Mermaid diagrams are recognized
-      const slidesWithMermaid = deck.slides.filter((s) => s.hasMermaid);
-      expect(slidesWithMermaid.length).toBeGreaterThanOrEqual(6);
-
-      // Check that slides with Tables are converted
-      const slidesWithTables = deck.slides.filter((s) => s.htmlContent.includes('<table'));
-      expect(slidesWithTables.length).toBeGreaterThanOrEqual(3);
-
-      // Check that callout alerts are converted
-      const slidesWithAlerts = deck.slides.filter((s) => s.htmlContent.includes('alert-callout'));
-      expect(slidesWithAlerts.length).toBeGreaterThanOrEqual(4);
+    const templatePath = path.resolve(__dirname, '../../public/template.md');
+    const templateSource = fs.readFileSync(templatePath, 'utf-8');
+    const mermaidRegex = /```mermaid\n([\s\S]*?)```/gi;
+    let match: RegExpExecArray | null;
+    let count = 0;
+    while ((match = mermaidRegex.exec(templateSource)) !== null) {
+      count++;
+      const code = match[1].trim();
+      const isValid = await mermaid.parse(code);
+      expect(isValid).toBeTruthy();
     }
+    expect(count).toBeGreaterThanOrEqual(4);
   });
+
 });

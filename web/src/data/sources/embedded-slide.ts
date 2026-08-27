@@ -4,7 +4,7 @@ import { parseDeck } from '../../domain/use-cases/parse-deck';
 export class EmbeddedSlideSource {
   static async loadDefault(): Promise<SlideDeck> {
     try {
-      const response = await fetch('./template.md');
+      const response = await fetch(`./template.md?v=${Date.now()}`);
       if (response.ok) {
         const text = await response.text();
         return parseDeck(text);
