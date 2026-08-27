@@ -1,0 +1,86 @@
+html, body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  font-family: 'Inter', 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  display: flex;
+  flex-direction: column;
+  transition: background-color 0.25s ease, color 0.25s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', 'Noto Sans TC', sans-serif;
+  font-weight: 800;
+  color: var(--text-main);
+  line-height: 1.25;
+  margin-bottom: calc(14px * var(--zoom-factor));
+}
+
+h1 {
+  font-size: calc(34px * var(--zoom-factor));
+  letter-spacing: -0.6px;
+}
+
+h2 {
+  font-size: calc(26px * var(--zoom-factor));
+  letter-spacing: -0.4px;
+}
+
+h3 {
+  font-size: calc(20px * var(--zoom-factor));
+  color: var(--accent-blue);
+}
+
+p, ul, ol {
+  font-size: calc(18px * var(--zoom-factor));
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin-bottom: calc(18px * var(--zoom-factor));
+}
+
+ul, ol {
+  padding-left: 28px;
+}
+
+li {
+  margin-bottom: 6px;
+}
+
+code, kbd, pre {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+code {
+  font-size: 0.9em;
+  padding: 2px 6px;
+  background-color: var(--bg-card-alt);
+  color: var(--code-text);
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+kbd {
+  font-size: 0.85em;
+  padding: 2px 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  box-shadow: var(--shadow-sm);
+  color: var(--text-main);
+}
+
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border-color);
+  padding: calc(18px * var(--zoom-factor));
+  border-radius: calc(10px * var(--zoom-factor));
+  font-size: calc(15px * var(--zoom-factor));
+  color: var(--code-text);
+  line-height: 1.5;
+  overflow-x: auto;
+  margin: calc(16px * var(--zoom-factor)) 0;
+}

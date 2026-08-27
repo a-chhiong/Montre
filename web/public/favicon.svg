@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284c7" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+  </defs>
+
+  <!-- High-contrast rounded canvas -->
+  <rect width="100" height="100" rx="22" fill="url(#g)" />
+
+  <!-- Presentation Screen Frame (Bold for 16px & 32px visibility) -->
+  <rect x="15" y="18" width="70" height="46" rx="8" fill="none" stroke="#ffffff" stroke-width="7" stroke-linejoin="round" />
+
+  <!-- Slide Header Bar & Content Line -->
+  <path d="M28 34 H50" stroke="#38bdf8" stroke-width="6" stroke-linecap="round" />
+  <path d="M28 48 H66" stroke="#ffffff" stroke-width="5" stroke-linecap="round" opacity="0.9" />
+
+  <!-- Status Indicator Dot -->
+  <circle cx="72" cy="34" r="5" fill="#10b981" />
+
+  <!-- Projector Pedestal Legs & Base -->
+  <path d="M34 82 L42 66 H58 L66 82" fill="none" stroke="#ffffff" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" />
+</svg>
