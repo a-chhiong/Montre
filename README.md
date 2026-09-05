@@ -83,8 +83,8 @@ flowchart TB
 ## 🛠️ Quick Start & Local Development
 
 ### Prerequisites
-* Node.js $\ge 18.0.0$
-* npm $\ge 9.0.0$
+* Node.js $\ge 20.0.0$ (Node.js 24 LTS recommended)
+* npm $\ge 10.0.0$
 
 ### Setup & Run
 ```bash
