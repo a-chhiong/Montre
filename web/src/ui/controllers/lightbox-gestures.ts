@@ -8,6 +8,10 @@ export class LightboxGesturesController implements ReactiveController {
   private startX = 0;
   private startY = 0;
 
+  private initialPinchDist = 0;
+  private lastTouchX = 0;
+  private lastTouchY = 0;
+
   constructor(host: ReactiveControllerHost & HTMLElement) {
     this.host = host;
     this.host.addController(this);
@@ -17,6 +21,10 @@ export class LightboxGesturesController implements ReactiveController {
     this.onMouseMove = this.onMouseMove.bind(this);
     this.onMouseUp = this.onMouseUp.bind(this);
     this.onDoubleClick = this.onDoubleClick.bind(this);
+
+    this.onTouchStart = this.onTouchStart.bind(this);
+    this.onTouchMove = this.onTouchMove.bind(this);
+    this.onTouchEnd = this.onTouchEnd.bind(this);
   }
 
   hostConnected(): void {
@@ -25,6 +33,10 @@ export class LightboxGesturesController implements ReactiveController {
     window.addEventListener('mousemove', this.onMouseMove);
     window.addEventListener('mouseup', this.onMouseUp);
     this.host.addEventListener('dblclick', this.onDoubleClick);
+
+    this.host.addEventListener('touchstart', this.onTouchStart, { passive: false });
+    this.host.addEventListener('touchmove', this.onTouchMove, { passive: false });
+    this.host.addEventListener('touchend', this.onTouchEnd);
   }
 
   hostDisconnected(): void {
@@ -33,7 +45,12 @@ export class LightboxGesturesController implements ReactiveController {
     window.removeEventListener('mousemove', this.onMouseMove);
     window.removeEventListener('mouseup', this.onMouseUp);
     this.host.removeEventListener('dblclick', this.onDoubleClick);
+
+    this.host.removeEventListener('touchstart', this.onTouchStart);
+    this.host.removeEventListener('touchmove', this.onTouchMove);
+    this.host.removeEventListener('touchend', this.onTouchEnd);
   }
+
 
   private onWheel(e: WheelEvent): void {
     e.preventDefault();
@@ -72,4 +89,47 @@ export class LightboxGesturesController implements ReactiveController {
     e.stopPropagation();
     resetLightboxZoom();
   }
+
+  private onTouchStart(e: TouchEvent): void {
+    if (e.touches.length === 1) {
+      this.lastTouchX = e.touches[0].clientX;
+      this.lastTouchY = e.touches[0].clientY;
+    } else if (e.touches.length === 2) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      this.initialPinchDist = Math.sqrt(dx * dx + dy * dy);
+    }
+  }
+
+  private onTouchMove(e: TouchEvent): void {
+    if (e.touches.length === 1) {
+      e.preventDefault();
+      const deltaX = this.lastTouchX - e.touches[0].clientX;
+      const deltaY = this.lastTouchY - e.touches[0].clientY;
+      this.lastTouchX = e.touches[0].clientX;
+      this.lastTouchY = e.touches[0].clientY;
+      updateLightboxTransform((prev) => TransformLightboxUseCase.applyPan(prev, deltaX, deltaY));
+    } else if (e.touches.length === 2) {
+      e.preventDefault();
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const newDist = Math.sqrt(dx * dx + dy * dy);
+      if (this.initialPinchDist > 0) {
+        const deltaDist = this.initialPinchDist - newDist;
+        updateLightboxTransform((prev) => TransformLightboxUseCase.applyPinch(prev, deltaDist * 2));
+      }
+      this.initialPinchDist = newDist;
+    }
+  }
+
+  private onTouchEnd(e: TouchEvent): void {
+    if (e.touches.length < 2) {
+      this.initialPinchDist = 0;
+    }
+    if (e.touches.length === 1) {
+      this.lastTouchX = e.touches[0].clientX;
+      this.lastTouchY = e.touches[0].clientY;
+    }
+  }
 }
+

@@ -13,6 +13,7 @@ export interface ISlideRepository {
   loadDefaultDeck(): Promise<SlideDeck>;
   loadFromUrl(url: string): Promise<SlideDeck>;
   loadFromFile(file: File): Promise<SlideDeck>;
+  loadFromHashPayload(payload: string): Promise<SlideDeck>;
   saveSession(state: Partial<SessionState>): void;
   loadSession(): SessionState;
   resolveInitialDeck(queryParamUrl?: string): Promise<{ deck: SlideDeck; initialIndex: number }>;

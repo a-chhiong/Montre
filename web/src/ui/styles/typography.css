@@ -84,3 +84,40 @@ pre {
   overflow-x: auto;
   margin: calc(16px * var(--zoom-factor)) 0;
 }
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: clamp(22px, 5.5vw, 32px);
+    margin-bottom: 10px;
+  }
+
+  h2 {
+    font-size: clamp(18px, 4.5vw, 24px);
+    margin-bottom: 8px;
+  }
+
+  h3 {
+    font-size: clamp(16px, 3.8vw, 19px);
+    margin-bottom: 6px;
+  }
+
+  p, ul, ol {
+    font-size: 15.5px;
+    line-height: 1.55;
+    margin-bottom: 12px;
+  }
+
+  ul, ol {
+    padding-left: 22px;
+  }
+
+  pre {
+    padding: 12px 14px;
+    font-size: 13px;
+    margin: 12px 0;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+

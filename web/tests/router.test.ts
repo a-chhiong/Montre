@@ -6,6 +6,7 @@ import { parseDeck } from '../src/domain/use-cases/parse-deck';
 
 describe('Router Unit Tests', () => {
   beforeEach(() => {
+    router.destroy();
     const deck = parseDeck(`
 # Slide 1
 ---
@@ -31,5 +32,15 @@ describe('Router Unit Tests', () => {
   it('should clamp slide navigation to deck boundaries', () => {
     router.navigateToSlide(999);
     expect(window.location.hash).toBe('#slide-3');
+  });
+
+  it('should preserve data route payload during slide navigation', () => {
+    window.location.hash = '#data/testPayload123';
+    router.init();
+    expect($currentRoute.get().slideIndex).toBe(1);
+
+    router.navigateToSlide(2);
+    expect(window.location.hash).toBe('#data/testPayload123/2');
+    expect($currentRoute.get().slideIndex).toBe(2);
   });
 });

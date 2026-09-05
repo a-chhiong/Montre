@@ -29,6 +29,8 @@ export class MontreSvgLightbox extends LitElement {
 
     return html`
       <div class="svg-modal-backdrop active">
+        <button class="svg-modal-top-close" @click=${closeLightbox} title="關閉檢視 (Esc)">✕</button>
+
         <div
           class="svg-modal-viewport"
           @click=${(e: MouseEvent) => {
@@ -44,27 +46,32 @@ export class MontreSvgLightbox extends LitElement {
         </div>
 
         <div class="svg-modal-controls">
-          <button class="svg-modal-btn" @click=${zoomInLightbox} title="Zoom In">
-            ➕ <span>放大</span>
+          <button class="svg-modal-btn" @click=${zoomInLightbox} title="放大 (Zoom In)">
+            <span class="btn-icon">➕</span>
+            <span class="btn-label">放大</span>
           </button>
 
-          <button class="svg-modal-btn" @click=${zoomOutLightbox} title="Zoom Out">
-            ➖ <span>縮小</span>
+          <button class="svg-modal-btn" @click=${zoomOutLightbox} title="縮小 (Zoom Out)">
+            <span class="btn-icon">➖</span>
+            <span class="btn-label">縮小</span>
           </button>
 
           <span class="scale-indicator">
             ${Math.round(scale * 100)}%
           </span>
 
-          <button class="svg-modal-btn" @click=${resetLightboxZoom} title="Reset (1.0x)">
-            🔄 <span>重設</span>
+          <button class="svg-modal-btn" @click=${resetLightboxZoom} title="重設 (1.0x)">
+            <span class="btn-icon">🔄</span>
+            <span class="btn-label">重設</span>
           </button>
 
-          <button class="svg-modal-btn close-btn" @click=${closeLightbox} title="Close (Esc)">
-            ✕ <span>關閉</span>
+          <button class="svg-modal-btn close-btn" @click=${closeLightbox} title="關閉 (Esc)">
+            <span class="btn-icon">✕</span>
+            <span class="btn-label">關閉</span>
           </button>
         </div>
       </div>
     `;
+
   }
 }

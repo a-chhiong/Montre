@@ -1,14 +1,13 @@
 import { LitElement, html } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { customElement, state } from 'lit/decorators.js';
 import { StoreController } from '../controllers/store';
-import { $activeDeck } from '../stores/deck';
-import { $currentSlideIndex } from '../stores/navigation';
+import { $activeDeck, setActiveDeck } from '../stores/deck';
+import { $currentSlideIndex, setCurrentSlideIndex } from '../stores/navigation';
 import { $themeMode, toggleThemeMode } from '../stores/theme';
 import { $projectorZoom, cycleProjectorZoom } from '../stores/zoom';
 import { $isFullscreen, toggleFullscreen } from '../stores/fullscreen';
+import { openShareModal } from '../stores/share';
 import { slideRepository } from '../../data/slide-repository';
-import { setActiveDeck } from '../stores/deck';
-import { setCurrentSlideIndex } from '../stores/navigation';
 
 @customElement('montre-top-nav')
 export class MontreTopNav extends LitElement {
@@ -18,11 +17,30 @@ export class MontreTopNav extends LitElement {
   public zoomCtrl = new StoreController(this, $projectorZoom);
   public fullscreenCtrl = new StoreController(this, $isFullscreen);
 
+  @state() private isMobileMenuOpen = false;
+
+  private onKeyDown = (e: KeyboardEvent) => {
+    if (e.key === 'Escape' && this.isMobileMenuOpen) {
+      this.isMobileMenuOpen = false;
+    }
+  };
+
+  connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener('keydown', this.onKeyDown);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    window.removeEventListener('keydown', this.onKeyDown);
+  }
+
   createRenderRoot() {
     return this;
   }
 
   private onOpenFileClick() {
+    this.isMobileMenuOpen = false;
     const fileInput = this.querySelector<HTMLInputElement>('#file-input');
     fileInput?.click();
   }
@@ -42,6 +60,7 @@ export class MontreTopNav extends LitElement {
   }
 
   private onDownloadTemplate() {
+    this.isMobileMenuOpen = false;
     const deck = this.deckCtrl.value;
     const content = deck.rawSource && deck.rawSource.trim() ? deck.rawSource : '';
 
@@ -50,7 +69,7 @@ export class MontreTopNav extends LitElement {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'montre-template.md';
+      a.download = 'montre-presentation.md';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -90,41 +109,124 @@ export class MontreTopNav extends LitElement {
             <path d="M8 20L10 16H14L16 20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             <circle cx="17" cy="7" r="1.2" fill="var(--accent-green)" />
           </svg>
-          <span style="cursor: pointer; font-weight: 800;" @click=${() => setCurrentSlideIndex(1)}>${deck.title}</span>
-          <span class="brand-chip">v0.3.0</span>
+          <span class="brand-title" @click=${() => setCurrentSlideIndex(1)} title="${deck.title}">${deck.title}</span>
         </div>
 
+        <input
+          type="file"
+          id="file-input"
+          style="display: none;"
+          accept=".md,.markdown,text/markdown,text/plain"
+          @change=${this.onFileChange}
+        />
+
+        <!-- Unified Navigation Actions across all viewports -->
         <div class="header-tools">
-          <input
-            type="file"
-            id="file-input"
-            style="display: none;"
-            accept=".md,.markdown,text/markdown,text/plain"
-            @change=${this.onFileChange}
-          />
-
-          <button class="tool-btn" @click=${this.onOpenFileClick} title="開啟本地 Markdown 簡報">
-            <span>📂 開啟檔案</span>
+          <button class="tool-btn highlight-btn" @click=${openShareModal} title="離線分享此簡報 (產生 #data/ 網址)">
+            <span style="color: var(--accent-blue);">🔗</span>
+            <span class="btn-label">分享</span>
           </button>
 
-          <button class="tool-btn" @click=${this.onDownloadTemplate} title="下載 Markdown 語法範本 (template.md)">
-            <span>📥 範本下載</span>
+          <button class="tool-btn" @click=${toggleFullscreen} title="${isFullscreen ? '退出全螢幕 (F)' : '全螢幕放映 (F)'}">
+            <span>${isFullscreen ? '🗗' : '⛶'}</span>
+            <span class="btn-label">${isFullscreen ? '退出' : '全螢幕'}</span>
           </button>
 
-          <button class="tool-btn" @click=${cycleProjectorZoom} title="切換縮放比例 (Z)">
-            <span>🔍 縮放:</span>
-            <span>${zoom}%</span>
-          </button>
-
-          <button class="tool-btn" @click=${toggleThemeMode} title="切換主題 (T)">
-            <span>${isDark ? '🌙 深色' : '☀️ 淺色'}</span>
-          </button>
-
-          <button class="tool-btn" @click=${toggleFullscreen} title="全螢幕切換 (F)">
-            <span>${isFullscreen ? '⛶ 退出' : '⛶ 全螢幕'}</span>
+          <button
+            class="tool-btn menu-toggle-btn ${this.isMobileMenuOpen ? 'active' : ''}"
+            @click=${() => { this.isMobileMenuOpen = !this.isMobileMenuOpen; }}
+            title="功能選單"
+            aria-label="功能選單"
+          >
+            <span>${this.isMobileMenuOpen ? '✕' : '☰'}</span>
+            <span class="btn-label">選單</span>
           </button>
         </div>
       </header>
+
+      <!-- Slide-Over Drawer -->
+      ${this.isMobileMenuOpen
+        ? html`
+            <div class="mobile-drawer-backdrop" @click=${() => { this.isMobileMenuOpen = false; }}>
+              <div class="mobile-right-drawer" @click=${(e: Event) => e.stopPropagation()}>
+                <div class="drawer-header">
+                  <div class="drawer-title-row">
+                    <span class="drawer-brand-icon">📽️</span>
+                    <span class="drawer-title">功能選單</span>
+                  </div>
+                  <button class="drawer-close-btn" @click=${() => { this.isMobileMenuOpen = false; }} aria-label="關閉 (Close)">✕</button>
+                </div>
+
+                <div class="drawer-content">
+                  <div class="drawer-section-label">外觀風格</div>
+                  <div class="drawer-menu-group">
+                    <button class="drawer-menu-row" @click=${toggleThemeMode}>
+                      <div class="row-left">
+                        <span class="row-icon">${isDark ? '🌙' : '☀️'}</span>
+                        <span class="row-label">切換主題模式</span>
+                      </div>
+                      <div class="row-right">
+                        <kbd class="row-shortcut">T</kbd>
+                        <span class="row-badge">${isDark ? '深色' : '淺色'}</span>
+                      </div>
+                    </button>
+                  </div>
+
+                  <div class="drawer-section-label">簡報管理</div>
+                  <div class="drawer-menu-group">
+                    <button class="drawer-menu-row" @click=${this.onOpenFileClick}>
+                      <div class="row-left">
+                        <span class="row-icon">📂</span>
+                        <span class="row-label">開啟 Markdown 檔案</span>
+                      </div>
+                      <span class="row-badge">本機</span>
+                    </button>
+
+                    <button class="drawer-menu-row" @click=${this.onDownloadTemplate}>
+                      <div class="row-left">
+                        <span class="row-icon">📥</span>
+                        <span class="row-label">下載簡報原始檔</span>
+                      </div>
+                      <span class="row-badge">.md</span>
+                    </button>
+                  </div>
+
+                  <div class="drawer-section-label">放映設定</div>
+                  <div class="drawer-menu-group">
+                    <button class="drawer-menu-row" @click=${cycleProjectorZoom}>
+                      <div class="row-left">
+                        <span class="row-icon">🔍</span>
+                        <span class="row-label">視窗縮放比例</span>
+                      </div>
+                      <div class="row-right">
+                        <kbd class="row-shortcut">Z</kbd>
+                        <span class="row-badge accent">${zoom}%</span>
+                      </div>
+                    </button>
+
+                    <button class="drawer-menu-row" @click=${toggleFullscreen}>
+                      <div class="row-left">
+                        <span class="row-icon">${isFullscreen ? '🗗' : '⛶'}</span>
+                        <span class="row-label">${isFullscreen ? '退出全螢幕放映' : '進入全螢幕放映'}</span>
+                      </div>
+                      <div class="row-right">
+                        <kbd class="row-shortcut">F</kbd>
+                        <span class="row-badge">${isFullscreen ? '放映中' : '視窗'}</span>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="drawer-footer">
+                  <div class="drawer-footer-tip">
+                    <span>💡 左右箭頭 / 空白鍵 翻頁</span>
+                  </div>
+                  <div class="drawer-version-chip">Montre v1.0.0</div>
+                </div>
+              </div>
+            </div>
+          `
+        : ''}
     `;
   }
 }

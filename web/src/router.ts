@@ -62,15 +62,36 @@ export class Router {
     const formatted = target.startsWith('#') ? target : `#${target}`;
     if (window.location.hash !== formatted) {
       window.location.hash = formatted;
+      this.handleHashChange();
     }
   }
 
   /**
    * Navigates directly to a target slide index (1-based)
    */
-  navigateToSlide(slideIndex: number): void {
+  navigateToSlide(slideIndex: number, replaceHistory = false): void {
+    if (typeof window === 'undefined') return;
     const deck = $activeDeck.get();
     const clamped = NavigateSlideUseCase.clampIndex(slideIndex, deck.totalSlides);
+
+    // If currently on a data route (#data/<payload>), preserve payload
+    const currentHash = window.location.hash || '';
+    if (NavigateSlideUseCase.isDataRoute(currentHash)) {
+      const dataRoute = NavigateSlideUseCase.extractDataRoute(currentHash, deck.totalSlides);
+      if (dataRoute && dataRoute.payload) {
+        const newHash = NavigateSlideUseCase.formatDataHash(dataRoute.payload, clamped);
+        if (window.location.hash !== newHash) {
+          if (replaceHistory && window.history && window.history.replaceState) {
+            window.history.replaceState(null, '', newHash);
+            this.handleHashChange();
+            return;
+          }
+          this.navigate(newHash);
+        }
+        return;
+      }
+    }
+
     this.navigate(NavigateSlideUseCase.formatHash(clamped));
   }
 

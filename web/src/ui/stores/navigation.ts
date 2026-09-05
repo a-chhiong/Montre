@@ -24,7 +24,26 @@ export function setCurrentSlideIndex(index: number) {
   const clamped = NavigateSlideUseCase.clampIndex(index, deck.totalSlides);
   $currentSlideIndex.set(clamped);
   if (typeof window !== 'undefined') {
-    window.location.hash = NavigateSlideUseCase.formatHash(clamped);
+    const currentHash = window.location.hash || '';
+    if (NavigateSlideUseCase.isDataRoute(currentHash)) {
+      const dataRoute = NavigateSlideUseCase.extractDataRoute(currentHash, deck.totalSlides);
+      if (dataRoute && dataRoute.payload) {
+        const newHash = NavigateSlideUseCase.formatDataHash(dataRoute.payload, clamped);
+        if (window.location.hash !== newHash) {
+          if (window.history && window.history.replaceState) {
+            window.history.replaceState(null, '', newHash);
+          } else {
+            window.location.hash = newHash;
+          }
+        }
+        resetScrollToTop();
+        return;
+      }
+    }
+    const standardHash = NavigateSlideUseCase.formatHash(clamped);
+    if (window.location.hash !== standardHash) {
+      window.location.hash = standardHash;
+    }
     resetScrollToTop();
   }
 }

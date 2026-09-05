@@ -1,6 +1,7 @@
 import { LitElement, html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { StoreController } from '../controllers/store';
+import { TouchSwipeController } from '../controllers/touch-swipe';
 import { $activeDeck, setActiveDeck } from '../stores/deck';
 import { $currentSlideIndex, setCurrentSlideIndex } from '../stores/navigation';
 import { slideRepository } from '../../data/slide-repository';
@@ -10,6 +11,7 @@ import './montre-slide';
 export class MontreViewport extends LitElement {
   public deckCtrl = new StoreController(this, $activeDeck);
   public navCtrl = new StoreController(this, $currentSlideIndex);
+  public touchCtrl = new TouchSwipeController(this);
 
   @state() private isDraggingOver = false;
 

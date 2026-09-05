@@ -12,6 +12,7 @@ import './montre-top-nav';
 import './montre-viewport';
 import './montre-floating-pill';
 import './montre-svg-lightbox';
+import './montre-share-modal';
 
 @customElement('montre-app')
 export class MontreApp extends LitElement {
@@ -52,6 +53,8 @@ export class MontreApp extends LitElement {
       <montre-viewport></montre-viewport>
       <montre-floating-pill></montre-floating-pill>
       <montre-svg-lightbox></montre-svg-lightbox>
+      <montre-share-modal></montre-share-modal>
     `;
   }
 }
+
